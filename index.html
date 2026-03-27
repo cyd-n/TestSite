@@ -1,1 +1,741 @@
-<h1>You're Hacked</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quidon Roethof — Software Developer</title>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --cyan-dim: #00b8cc;
+    --cyan-glow: rgba(0,245,255,0.15);
+    --bg: #000000;
+    --bg2: #040a0a;
+    --border: rgba(0,245,255,0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cyan);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* CRT flicker */
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.85; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    97% { opacity: 1; }
+  }
+  body { animation: flicker 8s infinite; }
+
+  /* Glow text */
+  .glow {
+    text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan), 0 0 40px var(--cyan-dim);
+  }
+  .glow-sm {
+    text-shadow: 0 0 6px var(--cyan), 0 0 12px var(--cyan-dim);
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-title {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--cyan-dim);
+    padding: 0.4rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-links {
+    display: flex;
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+  }
+
+  .nav-links a {
+    padding: 0.4rem 1.2rem;
+    border-right: 1px solid var(--border);
+    color: var(--cyan);
+    text-decoration: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .nav-links a:hover {
+    background: var(--cyan-glow);
+    text-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* Section */
+  section { padding: 5rem 1.5rem 3rem; max-width: 900px; margin: 0 auto; }
+  .section-header {
+    font-family: 'VT323', monospace;
+    font-size: 1.8rem;
+    letter-spacing: 0.2em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-header::before { content: '>'; color: var(--cyan-dim); }
+
+  /* Border boxes */
+  .box {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background: var(--bg2);
+    position: relative;
+  }
+  .box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--cyan-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .box:hover::before { opacity: 1; }
+
+  /* Avatar circle */
+  .avatar {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 2px solid var(--cyan);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    text-align: center;
+    box-shadow: 0 0 20px var(--cyan-dim), inset 0 0 20px rgba(0,245,255,0.05);
+    margin: 0 auto 2rem;
+    color: var(--cyan-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Big name */
+  .big-name {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .sub-title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    letter-spacing: 0.3em;
+    color: var(--cyan-dim);
+    text-transform: uppercase;
+  }
+
+  /* Btn */
+  .btn {
+    display: inline-block;
+    border: 1px solid var(--cyan);
+    padding: 0.5rem 2rem;
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    color: var(--cyan);
+    text-transform: uppercase;
+    transition: all 0.2s;
+    cursor: pointer;
+    background: transparent;
+  }
+  .btn:hover {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 0 0 20px var(--cyan);
+  }
+
+  /* Skills accordion */
+  .skill-row {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .skill-header:hover { background: var(--cyan-glow); }
+  .skill-content {
+    padding: 0 1rem 1rem;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--cyan-dim);
+  }
+
+  /* Project cards */
+  .project-featured {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 600px) {
+    .project-featured { grid-template-columns: 1fr; }
+  }
+  .project-img {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    font-size: 3rem;
+    color: var(--cyan-dim);
+    position: relative;
+    overflow: hidden;
+  }
+  .project-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(0,245,255,0.03) 10px,
+      rgba(0,245,255,0.03) 20px
+    );
+  }
+  .project-info { padding: 1.5rem; background: var(--bg2); }
+  .project-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .project-desc {
+    font-size: 0.8rem;
+    color: var(--cyan-dim);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .tag {
+    display: inline-block;
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.5rem;
+    font-size: 0.7rem;
+    margin: 0.1rem;
+    color: var(--cyan-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Thumbnail row */
+  .project-thumbs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+  @media (max-width: 600px) {
+    .project-thumbs { grid-template-columns: repeat(3, 1fr); }
+  }
+  .thumb {
+    border-right: 1px solid var(--border);
+    padding: 0.8rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.65rem;
+    color: var(--cyan-dim);
+    letter-spacing: 0.05em;
+  }
+  .thumb:last-child { border-right: none; }
+  .thumb:hover { background: var(--cyan-glow); color: var(--cyan); }
+  .thumb-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+  .thumb.active { background: var(--cyan-glow); color: var(--cyan); border-bottom: 2px solid var(--cyan); }
+
+  /* Typing cursor */
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .cursor { animation: blink 1s infinite; }
+
+  /* Contact */
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--cyan);
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    transition: background 0.2s;
+    text-transform: uppercase;
+  }
+  .contact-link:hover { background: var(--cyan-glow); padding-left: 1.5rem; }
+  .contact-link span { color: var(--cyan-dim); font-size: 1rem; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    color: var(--cyan-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Progress bar for skills */
+  .skill-bar {
+    height: 4px;
+    background: rgba(0,245,255,0.1);
+    margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    transition: width 1s ease;
+  }
+
+  /* Grid noise background */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+</style>
+</head>
+<body x-data="portfolio()" class="grid-bg">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-title">PORTFOLIO:QUIDON_ROETHOF</div>
+  <div class="nav-links">
+    <a href="#home">HOME</a>
+    <a href="#about">ABOUT</a>
+    <a href="#skill">SKILL</a>
+    <a href="#exp">EXP</a>
+    <a href="#edu">EDU</a>
+    <a href="#projects">PROJECTS</a>
+    <a href="#contact">CONTACT</a>
+  </div>
+</nav>
+
+<!-- HOME -->
+<section id="home" style="padding-top:8rem; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    <img class="avatar reveal" src="quidon.jpg" alt="">
+
+  <h1 class="big-name glow reveal" style="animation-delay:0.1s">QUIDON ROETHOF</h1>
+  <p class="sub-title reveal" style="margin-top:0.5rem; animation-delay:0.2s">SOFTWARE DEVELOPER</p>
+  <p class="reveal" style="margin-top:0.3rem; font-size:0.85rem; color:var(--cyan-dim); letter-spacing:0.2em; animation-delay:0.3s">NETHERLANDS</p>
+
+  <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;" class="reveal" style="animation-delay:0.4s">
+    <a href="#projects" class="btn">SEE PROJECTS</a>
+    <a href="#contact" class="btn">CONTACT ME</a>
+  </div>
+
+  <p style="margin-top:3rem; font-size:0.75rem; color:var(--cyan-dim); letter-spacing:0.15em;" class="reveal">
+    > 11 LANGUAGES &nbsp;|&nbsp; SYSTEMS PROGRAMMING &nbsp;|&nbsp; AI INTEGRATION &nbsp;|&nbsp; DEVELOPER TOOLING<span class="cursor">_</span>
+  </p>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">ABOUT ME</div>
+  <div class="box reveal">
+    <p style="line-height:1.9; font-size:0.9rem; color:var(--cyan-dim);">
+      19 year old software developer from the Netherlands, specializing in systems programming and developer tooling.
+      Started coding at 14 with Unity, got serious at 16, and haven't stopped since.
+      I build things from the ground up — from custom CPU emulators to AI assistants and browser compilers.
+      Currently I am finishing MBO 4 Software Development and starting HBO soon.
+    </p>
+    <p style="margin-top:1rem; line-height:1.9; font-size:0.9rem; color:var(--cyan-dim);">
+      I'm fascinated by how computers actually work — not just using frameworks, but understanding the layers underneath.
+      That curiosity has taken me from writing NES assembly to building stack-based virtual machines to shipping production tools at my internship.
+    </p>
+  </div>
+</section>
+
+<!-- SKILLS DONE-->
+<section id="skill">
+  <div class="section-header reveal">SKILLS</div>
+
+  <!-- Soft Skills -->
+  <div class="skill-row reveal" x-data="{open:false}">
+    <div class="skill-header" @click="open=!open">
+      <span>▷ SOFT SKILLS</span>
+      <span x-text="open ? '[−]' : '[+]'" style="color:var(--cyan-dim)"></span>
+    </div>
+    <div class="skill-content" x-show="open" x-transition>
+      Fast learner &nbsp;·&nbsp; Self-directed &nbsp;·&nbsp; Client communication &nbsp;·&nbsp; Team collaboration &nbsp;·&nbsp; Problem solving &nbsp;·&nbsp; <!-- Working under pressure &nbsp;·&nbsp;--> Want to learn more &nbsp;·&nbsp; Hard worker
+    </div>
+  </div>
+
+  <!-- Programming Languages -->
+  <div class="skill-row reveal" x-data="{open:false}">
+    <div class="skill-header" @click="open=!open">
+      <span>▷ PROGRAMMING LANGUAGES</span>
+      <span x-text="open ? '[−]' : '[+]'" style="color:var(--cyan-dim)"></span>
+    </div>
+    <div class="skill-content" x-show="open" x-transition>
+      <template x-for="s in langs" :key="s.name">
+        <div style="margin-bottom:0.8rem;">
+          <div style="display:flex; justify-content:space-between;">
+            <span x-text="s.name" style="color:var(--cyan)"></span>
+            <span x-text="s.level" style="color:var(--cyan-dim); font-size:0.75rem;"></span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" :style="`width:${s.pct}%`"></div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Frameworks -->
+  <div class="skill-row reveal" x-data="{open:false}">
+    <div class="skill-header" @click="open=!open">
+      <span>▷ FRAMEWORKS / LIBS / ENGINES</span>
+      <span x-text="open ? '[−]' : '[+]'" style="color:var(--cyan-dim)"></span>
+    </div>
+    <div class="skill-content" x-show="open" x-transition>
+      Spectra Console &nbsp;·&nbsp; .NET &nbsp;·&nbsp; WinForms &nbsp;·&nbsp; Unity &nbsp;·&nbsp; Unreal Engine &nbsp;·&nbsp; Godot &nbsp;·&nbsp; Love2D &nbsp;·&nbsp; Alpine.js &nbsp;·&nbsp; Vue &nbsp;·&nbsp; Tailwind &nbsp;·&nbsp; Chart.js &nbsp;·&nbsp; SFML
+    </div>
+  </div>
+
+  <!-- Tools -->
+  <div class="skill-row reveal" x-data="{open:false}">
+    <div class="skill-header" @click="open=!open">
+      <span>▷ TOOLS</span>
+      <span x-text="open ? '[−]' : '[+]'" style="color:var(--cyan-dim)"></span>
+    </div>
+    <div class="skill-content" x-show="open" x-transition>
+      Visual Studio &nbsp;·&nbsp; VS Code &nbsp;·&nbsp; GitHub &nbsp;·&nbsp; Postman &nbsp;·&nbsp; NPM &nbsp;·&nbsp; Cargo
+    </div>
+  </div>
+
+  <!-- Concepts -->
+  <div class="skill-row reveal" x-data="{open:false}">
+    <div class="skill-header" @click="open=!open">
+      <span>▷ CONCEPTS</span>
+      <span x-text="open ? '[−]' : '[+]'" style="color:var(--cyan-dim)"></span>
+    </div>
+    <div class="skill-content" x-show="open" x-transition>
+      CPU emulation &nbsp;·&nbsp; <!--Compiler theory &nbsp;·&nbsp;--> AI prompt engineering <!--&nbsp;·&nbsp; Bitwise operations--> &nbsp;·&nbsp; Memory mapping &nbsp;·&nbsp; RGB565 color encoding &nbsp;·&nbsp; 6502 assembly &nbsp;·&nbsp; OOP &nbsp;·&nbsp; Design patterns &nbsp;·&nbsp; MVC &nbsp;·&nbsp; SOLID
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE DONE-->
+<section id="exp">
+  <div class="section-header reveal">EXPERIENCE</div>
+  <div class="box reveal">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+      <div>
+        <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">SOFTWARE DEVELOPER INTERN</div>
+        <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem; letter-spacing:0.1em;">MCM Research</div>
+      </div>
+      <div style="color:var(--cyan-dim); font-size:0.8rem; letter-spacing:0.1em; font-family:'VT323',monospace; font-size:1.1rem;">2025 - 2026</div>
+    </div>
+    <ul style="color:var(--cyan-dim); font-size:0.85rem; line-height:2; padding-left:1rem; list-style:none;">
+      <li>▸ Built and shipped production tools and websites for internal company use</li>
+      <li>▸ Worked with PHP, JS</li>
+      <li>▸ Communicated directly with clients to gather requirements and deliver user stories</li>
+      <li>▸ Participated in code reviews</li>
+      <li>▸ Fixed production bugs</li>
+      <li>▸ Worked on existing codebases and extended them with new features</li>
+    </ul>
+  </div>
+</section>
+
+<!-- EDUCATION DONE-->
+<section id="edu">
+  <div class="section-header reveal">EDUCATION</div>
+  <div style="display:flex; flex-direction:column; gap:1rem;">
+    <div class="box reveal">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">MBO 4 — SOFTWARE DEVELOPMENT</div>
+          <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem;">ROC Almere Buiten</div>
+        </div>
+        <div style="font-family:'VT323',monospace; font-size:1.1rem; color:var(--cyan-dim);">2024 - 2026</div>
+      </div>
+    </div>
+    <div class="box reveal">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">MBO 2 — ICT SUPPORT</div>
+          <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem;">ROC Almere Buiten</div>
+        </div>
+        <div style="font-family:'VT323',monospace; font-size:1.1rem; color:var(--cyan-dim);">2023 - 2024</div>
+      </div>
+    </div>
+    <div class="box reveal">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">MBO 1</div>
+          <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem;">Rede</div>
+        </div>
+        <div style="font-family:'VT323',monospace; font-size:1.1rem; color:var(--cyan-dim);">2022 - 2023</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header reveal">PROJECTS</div>
+
+  <!-- Featured project display -->
+  <div class="reveal">
+    <div style="font-family:'VT323',monospace; font-size:1rem; color:var(--cyan-dim); letter-spacing:0.1em; margin-bottom:0.5rem; text-transform:uppercase;">
+      &gt; <span x-text="projects[activeProject].name"></span>
+    </div>
+
+    <div class="project-featured">
+      <div class="project-img">
+        <span x-text="projects[activeProject].icon" style="position:relative; z-index:1; font-size:4rem;"></span>
+      </div>
+      <div class="project-info">
+        <div class="project-name" x-text="projects[activeProject].name"></div>
+        <p class="project-desc" x-text="projects[activeProject].desc"></p>
+        <div style="margin-bottom:1rem;">
+          <template x-for="tag in projects[activeProject].tags" :key="tag">
+            <span class="tag" x-text="tag"></span>
+          </template>
+        </div>
+        <a :href="projects[activeProject].git" class="btn" style="font-size:1rem; padding:0.3rem 1rem;">GITHUB →</a>
+      </div>
+    </div>
+
+    <!-- Thumbnail row -->
+    <div class="project-thumbs">
+      <template x-for="(p, i) in projects" :key="p.name">
+        <div class="thumb" :class="{active: activeProject === i}" @click="activeProject = i">
+          <span class="thumb-icon" x-text="p.icon"></span>
+          <span x-text="p.short"></span>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Show More / Less button -->
+    <a href="ExtraProjects.html" class="btn" style="display:block; width:100%; text-align:center; font-size:2rem; padding:1rem 2rem; letter-spacing:0.2em;">
+  [ SHOW MORE → ]
+</a>
+</section>
+
+<!-- CONTACT DONE-->
+<section id="contact">
+  <div class="section-header reveal">CONTACT</div>
+  <div class="box reveal" style="text-align:center; padding: 2rem;">
+ 
+    <!-- Phone Number -->
+    <a href="tel:+31623731812" style="display:block; font-size:1.2rem; margin-bottom: 1.5rem; text-decoration:none;">
+       <i class="fa-solid fa-phone"></i> +31 6 23 73 18 12
+    </a>
+ 
+    <!-- Icons Row -->
+    <div style="display:flex; justify-content:center; gap:2rem; font-size:2rem;">
+ 
+      <a href="mailto:quidonroethof4@gmail.com" title="Email">
+        <i class="fa-solid fa-envelope"></i>
+      </a>
+ 
+      <a href="https://github.com/Darklord1234938" target="_blank" title="GitHub">
+        <i class="fa-brands fa-github"></i>
+      </a>
+ 
+      <a href="https://cydngames.itch.io/" target="_blank" title="Itch.io">
+        <i class="fa-brands fa-itch-io"></i>
+      </a>
+ 
+      <a href="https://www.linkedin.com/in/quidon-roethof-97794a2ab/" target="_blank" title="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+      </a>
+ 
+    </div>
+  </div>
+</section>
+ 
+
+<footer>
+  <span style="color:var(--cyan-dim)">QUIDON ROETHOF</span> &nbsp;·&nbsp; SOFTWARE DEVELOPER &nbsp;·&nbsp; NETHERLANDS &nbsp;·&nbsp; <span class="cursor">_</span>
+</footer>
+
+<script>
+function portfolio() {
+  return {
+    activeProject: 0,
+
+    langs: [
+      { name: 'C#',         level: 'INTERMEDIATE-ADVANCED', pct: 80 },
+      { name: 'PYTHON',     level: 'INTERMEDIATE',          pct: 70 },
+      { name: 'JAVASCRIPT', level: 'INTERMEDIATE',   pct: 65 },
+      { name: 'PHP',        level: 'JUNIOR/INTERMEDIATE',   pct: 50 },
+      { name: 'C++',        level: 'UNKOWN',                pct: 0 },
+      { name: 'LUA',        level: 'UNKOWN',                pct: 0 },
+      { name: 'JAVA',       level: 'UNKOWN',                pct: 0 },
+      { name: 'RUST',       level: 'UNKOWN',                pct: 0 },
+      { name: 'C',          level: 'UNKOWN',       pct: 0 },
+    //  { name: 'KOTLIN',     level: 'UNKOWN',              pct: 0 },
+    //  { name: 'DART',       level: 'UNKOWN',              pct: 0 },
+    ],
+
+    projects: [ 
+      {
+        name: 'V-CONSOLE',
+        short: 'V-CON',
+        icon: '🖥️',
+        desc: 'Custom virtual game console with GPU framebuffer, RGB565 color encoding, VRAM, RAM, ROM architecture and custom CPU in C#. A complete custom computing platform.',
+        tags: ['C#', 'WinForms', 'GPU', 'RGB565', 'Emulation'],
+        git:"https://github.com/Darklord1234938/V-console" }, 
+        {
+        name: 'QIBYTE VM',
+        short: 'QB',
+        icon: '⚙️',
+        desc: 'Stack-based virtual machine with custom instruction set and bytecode. Implements Forth-like semantics with full arithmetic, stack manipulation and planned binary format.',
+        tags: ['C#', 'VM', 'Bytecode', 'Compiler Theory'],
+        git:"https://github.com/Darklord1234938/QiByte" }, 
+        {
+        name: 'ATHENA AI',
+        short: 'AI',
+        icon: '🤖',
+        desc: 'Configurable AI assistant with dynamic prompt engineering, persistent settings, TTS integration and retro terminal UI. Supports multiple AI personalities and Gemini models.',
+        tags: ['JavaScript', 'Alpine.js', 'Gemini API', 'TTS', 'Prompt Engineering', 'AI'],
+        git:"https://github.com/Darklord1234938/Athena" },
+      {
+        name: 'IDE',
+        short: 'IDE',
+        icon: '💻',
+        desc: 'Lightweight multi-language desktop IDE built in one day. Supports 8 languages with real compiler integration, colored error output and temp project management.',
+        tags: ['C#', 'WinForms', 'Process API', '8 Languages'],
+        git:"https://github.com/Darklord1234938/IDE" },
+      {
+        name: 'BROWSER COMPILER',
+        short: 'COMP',
+        icon: '🔧',
+        desc: 'In-browser code runner supporting JavaScript, TypeScript, Lua, Ruby and Markdown using real language runtimes. Features console.log capture and download.',
+        tags: ['JavaScript', 'Alpine.js'],
+        git:"https://github.com/Darklord1234938/Online-compiler" },
+      {
+        name: 'WEATHER DASHBOARD',
+        short: 'WTH',
+        icon: '🌤️',
+        desc: 'Weather app with hourly Chart.js temperature graphs, air quality data, astronomy info and 3-day forecast. Built with WeatherAPI.',
+        tags: ['JavaScript', 'Chart.js', 'Alpine.js', 'REST API'],
+        git:"https://github.com/Darklord1234938/weather-app/tree/main" },
+      {
+        name: 'MusicCoreT — NuGet Library',
+        short: 'MCT',
+        icon: '🔲',
+        desc: 'A packaged NuGet library for playing music in console and text-based games. Provides a clean API with note, playlist, and player classes. Playback runs on a background thread so the game loop is never blocked. Supports 3 octaves across all 7 notes with method overloading for flexible use.',
+        tags: ['C#', 'NuGet', 'Music'],
+        git:"https://github.com/Darklord1234938/MusicCoreT" },
+        {
+        name: 'Mail',
+        short: 'Mail',
+        icon: '💻',
+        desc: 'Custom Email Protocol A custom email system built on raw TCP sockets with a self-designed text protocol inspired by SMTP. The server parses protocol commands and persists emails to file. A Tkinter GUI provides a user-friendly interface for composing and sending. Demonstrates how real email protocols work under the hood.',
+        tags: ['Python', 'tKinter', 'Web Sockets', 'Mail', 'Custom Protocol', 'TCP Sockets'],
+        git:"https://github.com/Darklord1234938/Mail-System" },
+        {
+        name: 'VPET',
+        short: 'VPET',
+        icon: '💻',
+        desc: 'Browser Tamagotchi Game A fully playable Tamagotchi-style virtual pet game rendered in a GameBoy-style browser shell. Uses the Canvas API for all rendering, a stat system with time-based decay, an inventory with Food and Toy classes, D-pad controls, and async timed actions for sleep and bath states. Includes a game over screen.',
+        tags: ['JavaScript', 'Canvas', 'Asynce', 'Alpine.js'],
+        git:"https://github.com/Darklord1234938/VPet" },
+        {
+        name: 'Video Streaming Backend',
+        short: 'VSB',
+        icon: '💻',
+        desc: 'A PHP backend for video streaming that implements the HTTP Range request protocol — the same mechanism used by YouTube and Netflix for video seeking and buffering. Parses the Range header, calculates byte offsets, and streams video in chunks. Also includes a thumbnail API and a full JSON metadata endpoint.',
+        tags: ['PHP', 'MySQL', 'HTTP Range Requests'],
+        git:"https://github.com/Darklord1234938/VideoSite" },
+    ],
+
+    init() {
+      // Scroll reveal
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+  }
+}
+</script>
+</body>
+</html>
