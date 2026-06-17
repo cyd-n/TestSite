@@ -60,7 +60,7 @@ function portfolio() {
         tags: ['JavaScript', 'Chart.js', 'Alpine.js', 'REST API'],
         git:"https://github.com/cyd-n/weather-app/tree/main" },
       {
-        name: 'MusicCoreT — NuGet Library',
+        name: 'MusicCoreT, NuGet Library',
         short: 'MCT',
         icon: '🔲',
         desc: 'A packaged NuGet library for playing music in console and text-based games. Provides a clean API with note, playlist, and player classes. Playback runs on a background thread so the game loop is never blocked. Supports 3 octaves across all 7 notes with method overloading for flexible use.',
@@ -84,7 +84,7 @@ function portfolio() {
         name: 'Video Streaming Backend',
         short: 'VSB',
         icon: '💻',
-        desc: 'A PHP backend for video streaming that implements the HTTP Range request protocol — the same mechanism used by YouTube and Netflix for video seeking and buffering. Parses the Range header, calculates byte offsets, and streams video in chunks. Also includes a thumbnail API and a full JSON metadata endpoint.',
+        desc: 'A PHP backend for video streaming that implements the HTTP Range request protocol, the same mechanism used by YouTube and Netflix for video seeking and buffering. Parses the Range header, calculates byte offsets, and streams video in chunks. Also includes a thumbnail API and a full JSON metadata endpoint.',
         tags: ['PHP', 'MySQL', 'HTTP Range Requests'],
         git:"https://github.com/cyd-n/VideoSite" },
     ],
