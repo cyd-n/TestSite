@@ -97,8 +97,6 @@
           </div>
         </div>
       </template>
-      <p>My level for each programming languages is done by letting Claude see all my github projects and explain why made some chioce and answer code qeustions,</p>
-    <p>UNKOWN means i know some what of the language but i do not have it un my git or current Pc so Cluade do do not know my skill lvl in it</p>
     </div>
   </div>
 
@@ -166,6 +164,15 @@
     <div class="box reveal">
       <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
         <div>
+          <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">HBO deeltijd — SOFTWARE DEVELOPMENT</div>
+          <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem;">Bit Academy</div>
+        </div>
+        <div style="font-family:'VT323',monospace; font-size:1.1rem; color:var(--cyan-dim);">02/09/2026 - future</div>
+      </div>
+    </div>
+    <div class="box reveal">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <div>
           <div style="font-family:'Orbitron',monospace; font-size:0.9rem; font-weight:700; letter-spacing:0.1em;">MBO 4 — SOFTWARE DEVELOPMENT</div>
           <div style="color:var(--cyan-dim); font-size:0.85rem; margin-top:0.2rem;">ROC Almere Buiten</div>
         </div>
@@ -205,17 +212,29 @@
 
     <div class="project-featured">
       <div class="project-img">
-        <span x-text="projects[activeProject].icon" style="position:relative; z-index:1; font-size:4rem;"></span>
-      </div>
+          <img :src="projects[activeProject].img" style="position:relative; z-index:1; font-size:4rem;"></img>
+        </div>
       <div class="project-info">
         <div class="project-name" x-text="projects[activeProject].name"></div>
+        <div class="card-state" x-text="p.state"></div>
+          <div class="card-date" x-text="p.date"></div>
         <p class="project-desc" x-text="projects[activeProject].desc"></p>
         <div style="margin-bottom:1rem;">
           <template x-for="tag in projects[activeProject].tags" :key="tag">
             <span class="tag" x-text="tag"></span>
           </template>
         </div>
-        <a :href="projects[activeProject].git" class="btn" style="font-size:1rem; padding:0.3rem 1rem;">GITHUB →</a>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <a :href="projects[activeProject].git" class="btn" style="font-size:1rem; padding:0.3rem 1rem;">
+              GITHUB →
+          </a>
+
+          <div x-show="projects[activeProject].liveDemo">
+              <a :href="projects[activeProject].liveDemoUrl" target="_blank" class="btn" style="font-size:1rem; padding:0.3rem 1rem;">
+                  LiveDemo →
+              </a>
+          </div>
+      </div>
       </div>
     </div>
 
