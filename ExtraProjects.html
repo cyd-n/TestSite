@@ -89,6 +89,10 @@
 
         <div class="card-footer">
           <a :href="p.git" target="_blank" class="btn">GITHUB →</a>
+
+          <div x-show="p.liveDemo">
+            <a :href="p.liveDemoUrl" target="_blank" class="btn">LiveDemo →</a>
+        </div>
         </div>
 
       </div>
