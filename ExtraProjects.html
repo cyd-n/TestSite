@@ -70,11 +70,12 @@
       <div class="project-card" :style="`animation-delay: ${i * 0.05}s`">
 
         <div class="card-icon-area">
-          <span class="card-icon" x-text="p.icon"></span>
+          <img class="card-icon" :src="p.img" alt="">
         </div>
 
         <div class="card-body">
           <div class="card-name" x-text="p.name"></div>
+          
           <p class="card-desc" x-text="p.desc"></p>
           <div class="card-tags">
             <template x-for="tag in p.tags" :key="tag">
